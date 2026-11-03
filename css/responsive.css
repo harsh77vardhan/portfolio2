@@ -1,19 +1,14 @@
 /**
- * responsive.css - Responsive Breakpoints & Mobile Optimization
+ * responsive.css - Responsive Breakpoints & Viewport Optimizations
  * Breakpoints: 1280px, 1024px, 768px, 480px
  */
 
 /* ==========================================================================
-   Desktop Large / Max (<= 1280px)
+   Desktop Max / Large (<= 1280px)
    ========================================================================== */
 @media (max-width: 1280px) {
   .container {
-    max-width: 1140px;
-  }
-
-  .hero-layout {
-    grid-template-columns: minmax(320px, 620px) 1fr;
-    gap: var(--space-xl);
+    max-width: 1040px;
   }
 }
 
@@ -21,29 +16,21 @@
    Tablet Landscape (<= 1024px)
    ========================================================================== */
 @media (max-width: 1024px) {
-  .hero-layout {
-    grid-template-columns: 1fr;
-    max-width: 720px;
-    margin-inline: auto;
+  .projects-grid {
+    grid-template-columns: repeat(6, 1fr);
   }
 
-  .hero-visual-spacer {
-    display: none;
+  .project-card.is-flagship {
+    grid-column: span 6;
   }
 
-  .about-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-lg);
-  }
-
-  .flagship-header {
-    flex-direction: column;
-    align-items: flex-start;
+  .project-card:not(.is-flagship) {
+    grid-column: span 3;
   }
 
   .contact-layout {
     grid-template-columns: 1fr;
-    gap: var(--space-xl);
+    gap: var(--space-2xl);
   }
 }
 
@@ -51,28 +38,36 @@
    Tablet Portrait & Mobile (<= 768px)
    ========================================================================== */
 @media (max-width: 768px) {
-  :root {
-    --space-4xl: 64px;
-    --space-3xl: 48px;
-    --space-2xl: 36px;
+  body {
+    /* Focuses on the open sky and contrail behind text on mobile */
+    background-position: 30% center;
+  }
+
+  .bg-stage {
+    background-position: 30% center;
+  }
+
+  .bg-video {
+    object-position: 30% center;
   }
 
   .bg-overlay {
     background: radial-gradient(
-      circle at 35% 25%,
-      rgba(9, 37, 107, 0.35) 0%,
-      rgba(8, 24, 75, 0.65) 100%
+      ellipse at 50% 35%,
+      rgba(14, 38, 80, 0.42) 0%,
+      rgba(10, 26, 60, 0.65) 60%,
+      rgba(7, 18, 45, 0.82) 100%
     );
   }
 
-  /* Mobile Navigation */
+  /* Hamburger Toggle */
   .hamburger-btn {
     display: flex;
     z-index: calc(var(--z-nav) + 10);
   }
 
   .hamburger-btn.is-active span:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
+    transform: translateY(6.5px) rotate(45deg);
   }
 
   .hamburger-btn.is-active span:nth-child(2) {
@@ -80,27 +75,27 @@
   }
 
   .hamburger-btn.is-active span:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
+    transform: translateY(-6.5px) rotate(-45deg);
   }
 
+  /* Mobile Slide-Out Drawer */
   .nav-menu {
     position: fixed;
     top: 0;
     right: -100%;
-    width: 80%;
-    max-width: 320px;
+    width: 78%;
+    max-width: 300px;
     height: 100vh;
-    background: rgba(6, 20, 60, 0.96);
+    background: rgba(8, 22, 52, 0.94);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     border-left: 1px solid var(--glass-border);
     flex-direction: column;
     align-items: flex-start;
-    padding: 80px 24px 32px;
-    gap: 8px;
-    transition: right var(--duration-normal) var(--ease-decelerate);
-    box-shadow: -12px 0 32px rgba(0, 0, 0, 0.6);
-    z-index: var(--z-nav);
+    padding: 90px var(--space-xl) var(--space-2xl);
+    gap: var(--space-lg);
+    transition: right var(--duration-normal) var(--ease-cinematic);
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
   }
 
   .nav-menu.is-open {
@@ -108,149 +103,60 @@
   }
 
   .nav-link {
-    width: 100%;
-    padding: 12px 16px;
-    font-size: 1rem;
+    font-size: 1.125rem;
   }
 
-  /* Workflow converts from horizontal to vertical track */
-  .workflow-container {
-    overflow-x: visible;
+  /* Work Grid on Mobile */
+  .projects-grid {
+    grid-template-columns: 1fr;
   }
 
-  .workflow-track {
-    flex-direction: column;
-    min-width: 0;
-    gap: var(--space-lg);
+  .project-card.is-flagship,
+  .project-card:not(.is-flagship) {
+    grid-column: span 1;
   }
 
-  .workflow-step {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 16px;
+  .hero-content {
+    max-width: 100%;
   }
 
-  .workflow-step-indicator {
-    flex-direction: column;
-    height: 100%;
+  .hero-headline {
+    font-size: clamp(3rem, 12vw, 4.5rem);
   }
 
-  .workflow-step-line {
-    width: 2px;
-    height: 40px;
-    flex-grow: 0;
-    margin-top: 6px;
-  }
-
-  .workflow-step:last-child .workflow-step-line {
+  .hero-scroll-indicator {
     display: none;
-  }
-
-  .workflow-step-content {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  /* Grids Stack */
-  .skills-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .standard-projects-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .experience-grid {
-    grid-template-columns: 1fr;
-  }
-
-  /* Footer */
-  .footer-container {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 16px;
   }
 }
 
 /* ==========================================================================
-   Small Mobile Devices (<= 480px)
+   Small Mobile (<= 480px)
    ========================================================================== */
 @media (max-width: 480px) {
   .container {
-    padding-inline: 16px;
-  }
-
-  .hero-card {
-    padding: 20px 16px;
-    border-radius: var(--radius-xl);
-  }
-
-  .hero-heading {
-    font-size: 1.75rem;
+    padding-inline: var(--space-md);
   }
 
   .hero-actions {
     flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn {
     width: 100%;
   }
 
-  .hero-actions .btn {
-    width: 100%;
+  .about-facts-row {
+    font-size: 0.875rem;
   }
 
-  .hero-stats-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
+  .card-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
   }
 
-  .stat-value {
-    font-size: 1.35rem;
-  }
-
-  .segmented-milestones {
-    display: none; /* Hide dense milestone ticks on ultra small screens to prevent clipping */
-  }
-
-  .flagship-card {
-    padding: 20px 16px;
-    border-radius: var(--radius-2xl);
-  }
-
-  .flagship-title {
-    font-size: 1.75rem;
-  }
-
-  .flagship-details-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .chips-cloud {
-    gap: 6px;
-  }
-
-  .chip {
-    font-size: 0.75rem;
-    padding: 5px 10px;
-  }
-
-  .terminal-card {
-    border-radius: var(--radius-xl);
-  }
-
-  .terminal-body {
-    padding: 16px;
-  }
-
-  .terminal-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .btn,
-  .nav-github-btn,
-  .form-input,
-  .form-textarea {
-    min-height: 44px; /* Touch target accessibility rule */
+  .card-view-link {
+    margin-top: 4px;
   }
 }

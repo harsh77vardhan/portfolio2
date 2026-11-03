@@ -1,6 +1,9 @@
 /**
- * animations.js - Lightweight Vanilla Animation Orchestrator
- * Handles Scroll Reveals, Segmented Bar Fillings, Count-up Numbers, and Subtle Parallax
+ * animations.js - Lightweight Smooth Motion & Parallax Orchestrator
+ * Adheres strictly to design skill guidelines:
+ * - Slow, smooth fades and slight upward reveals on scroll
+ * - Very subtle background parallax
+ * - Respects prefers-reduced-motion
  */
 
 const PortfolioAnimations = {
@@ -8,15 +11,28 @@ const PortfolioAnimations = {
    * Initializes IntersectionObserver for scroll-reveal animations
    */
   initScrollReveal() {
+    const revealElements = document.querySelectorAll('.reveal');
+    if (!revealElements.length) return;
+
     if (!('IntersectionObserver' in window)) {
-      document.querySelectorAll('.reveal').forEach(el => el.classList.add('is-revealed'));
+      revealElements.forEach(el => el.classList.add('is-revealed'));
       return;
     }
+
+    const checkVisible = () => {
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      revealElements.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= vh + 100) {
+          el.classList.add('is-revealed');
+        }
+      });
+    };
 
     const revealObserver = new IntersectionObserver(
       (entries, observer) => {
         entries.forEach(entry => {
-          if (entry.isIntersecting) {
+          if (entry.isIntersecting || entry.intersectionRatio > 0) {
             entry.target.classList.add('is-revealed');
             observer.unobserve(entry.target);
           }
@@ -24,139 +40,135 @@ const PortfolioAnimations = {
       },
       {
         root: null,
-        threshold: 0.05,
-        rootMargin: '100px 0px 50px 0px'
+        threshold: 0,
+        rootMargin: '300px 0px 300px 0px'
       }
     );
 
-    document.querySelectorAll('.reveal').forEach(el => {
-      // Immediate check for elements already in viewport
+    revealElements.forEach(el => {
+      revealObserver.observe(el);
       const rect = el.getBoundingClientRect();
-      if (rect.top < window.innerHeight + 150 && rect.bottom > -50) {
+      if (rect.top <= (window.innerHeight || 900) + 200) {
         el.classList.add('is-revealed');
       }
-      revealObserver.observe(el);
+    });
+    window.addEventListener('scroll', checkVisible, { passive: true });
+  },
+
+  /**
+   * Initializes background video controls:
+   * - Pause when tab is hidden, resume when visible
+   * - Respect prefers-reduced-motion (remove/pause video, keep poster)
+   * - On mobile (<= 768px) or data-saver (navigator.connection.saveData), show poster
+   * - If autoplay is blocked, retry on first user interaction
+   */
+  initBackgroundVideo() {
+    const video = document.getElementById('bg-video');
+    const stage = document.getElementById('bg-stage');
+    if (!video || !stage) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isMobile = window.innerWidth <= 768;
+    const isSaveData = Boolean(
+      navigator.connection && (navigator.connection.saveData === true || ['slow-2g', '2g'].includes(navigator.connection.effectiveType))
+    );
+
+    // If user prefers reduced motion or data saver / mobile fallback
+    if (prefersReducedMotion || isSaveData || isMobile) {
+      video.pause();
+      video.style.display = 'none';
+      return;
+    }
+
+    // Attempt video playback
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // Autoplay prevented by browser policy - retry on first user gesture
+        const resumeOnInteraction = () => {
+          video.play().catch(() => {});
+          window.removeEventListener('click', resumeOnInteraction);
+          window.removeEventListener('keydown', resumeOnInteraction);
+          window.removeEventListener('touchstart', resumeOnInteraction);
+        };
+        window.addEventListener('click', resumeOnInteraction, { once: true });
+        window.addEventListener('keydown', resumeOnInteraction, { once: true });
+        window.addEventListener('touchstart', resumeOnInteraction, { once: true });
+      });
+    }
+
+    // Visibility change: pause when tab is hidden, resume when visible
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        video.pause();
+      } else {
+        if (!prefersReducedMotion && !isSaveData && window.innerWidth > 768) {
+          video.play().catch(() => {});
+        }
+      }
+    });
+
+    // Handle fallback if video encounters any runtime error
+    video.addEventListener('error', () => {
+      video.style.display = 'none';
     });
   },
 
   /**
-   * Animates numeric counter stats (e.g. Projects Built: 4)
-   */
-  initStatCounters() {
-    const counterElements = document.querySelectorAll('[data-counter-target]');
-    if (!counterElements.length) return;
-
-    // Initialize content so numbers are never blank or zero if observer delays
-    counterElements.forEach(el => {
-      el.textContent = el.getAttribute('data-counter-target');
-    });
-
-    const counterObserver = new IntersectionObserver(
-      (entries, observer) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const el = entry.target;
-            const target = parseInt(el.getAttribute('data-counter-target'), 10);
-            if (isNaN(target)) return;
-
-            let current = 0;
-            const duration = 1000; // ms
-            const stepTime = Math.max(Math.floor(duration / target), 40);
-
-            const timer = setInterval(() => {
-              current += 1;
-              el.textContent = current;
-              if (current >= target) {
-                el.textContent = target;
-                clearInterval(timer);
-              }
-            }, stepTime);
-
-            observer.unobserve(el);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    counterElements.forEach(el => counterObserver.observe(el));
-  },
-
-  /**
-   * Animates segmented skill bars and hero bar when scrolled into view
-   */
-  initSegmentedBars() {
-    const barElements = document.querySelectorAll('.skill-bar, .segmented-bar');
-    if (!barElements.length) return;
-
-    const barObserver = new IntersectionObserver(
-      (entries, observer) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const bar = entry.target;
-            const segments = bar.querySelectorAll('.skill-bar-seg, .segment-cell');
-            
-            segments.forEach((seg, idx) => {
-              setTimeout(() => {
-                const targetState = seg.getAttribute('data-state');
-                if (targetState === 'striped') {
-                  seg.classList.add('striped');
-                } else if (targetState === 'filled' || targetState === 'active') {
-                  seg.classList.add('filled', 'active');
-                }
-              }, idx * 60);
-            });
-
-            observer.unobserve(bar);
-          }
-        });
-      },
-      { threshold: 0.25 }
-    );
-
-    barElements.forEach(el => barObserver.observe(el));
-  },
-
-  /**
-   * Subtle, smooth background parallax without distorting the composition
+   * Very subtle mouse parallax on desktop (max 6px shift, no distortion)
    */
   initParallax() {
-    // Only run on desktop/devices with hover and no reduced-motion preference
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReduced || window.innerWidth < 1024) return;
 
-    let ticking = false;
+    const stage = document.getElementById('bg-stage');
+    if (!stage) return;
 
-    window.addEventListener(
-      'scroll',
-      () => {
-        if (!ticking) {
-          window.requestAnimationFrame(() => {
-            const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-            // Very subtle shift (0.035 factor) that maintains coverage and sharpness
-            const offset = scrollY * 0.035;
-            document.body.style.backgroundPositionY = `calc(50% + ${offset}px)`;
-            ticking = false;
-          });
-          ticking = true;
-        }
-      },
-      { passive: true }
-    );
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    let rafId = null;
+
+    const onMouseMove = (e) => {
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      // Max 6px shift
+      targetX = ((e.clientX - centerX) / centerX) * 6;
+      targetY = ((e.clientY - centerY) / centerY) * 6;
+
+      if (!rafId) {
+        rafId = requestAnimationFrame(updateParallax);
+      }
+    };
+
+    const updateParallax = () => {
+      currentX += (targetX - currentX) * 0.08;
+      currentY += (targetY - currentY) * 0.08;
+
+      stage.style.transform = `translate3d(${-currentX.toFixed(2)}px, ${-currentY.toFixed(2)}px, 0)`;
+
+      if (Math.abs(targetX - currentX) > 0.05 || Math.abs(targetY - currentY) > 0.05) {
+        rafId = requestAnimationFrame(updateParallax);
+      } else {
+        rafId = null;
+      }
+    };
+
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
   },
 
   /**
    * Initializes all animations in sequence
    */
   init() {
+    this.initBackgroundVideo();
     this.initScrollReveal();
-    this.initStatCounters();
-    this.initSegmentedBars();
     this.initParallax();
   }
 };
 
-// Export to window
+// Expose globally
 if (typeof window !== 'undefined') {
   window.PortfolioAnimations = PortfolioAnimations;
 }

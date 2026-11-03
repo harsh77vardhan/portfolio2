@@ -1,0 +1,99 @@
+/**
+ * variables.css - Design System Tokens & CSS Variables
+ * Inspired by the reference UI aesthetic (cobalt sky, halftone stars, clean glass cards)
+ */
+
+:root {
+  /* Fonts */
+  --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Reference Image Color Palette */
+  --color-sky-deep: #09256b;
+  --color-sky-cobalt: #0e3ba9;
+  --color-sky-bright: #2651bf;
+  --color-cloud-white: #f1f4fb;
+  --color-cloud-warm: #d5dced;
+
+  /* Brand Badge (Reference UI Green Accent) */
+  --color-brand-green: #10b981;
+  --color-brand-green-glow: rgba(16, 185, 129, 0.4);
+
+  /* Accent & Highlight Colors */
+  --color-accent-cyan: #38bdf8;
+  --color-accent-blue: #60a5fa;
+  --color-focus: #38bdf8;
+
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.82);
+  --text-muted: rgba(255, 255, 255, 0.58);
+  --text-faint: rgba(255, 255, 255, 0.38);
+
+  /* Glassmorphism System */
+  --glass-bg: rgba(10, 30, 85, 0.84);
+  --glass-bg-elevated: rgba(12, 36, 100, 0.9);
+  --glass-bg-card: rgba(8, 26, 78, 0.86);
+  --glass-bg-subtle: rgba(255, 255, 255, 0.08);
+  --glass-bg-hover: rgba(18, 48, 125, 0.92);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-border-subtle: rgba(255, 255, 255, 0.12);
+  --glass-border-bright: rgba(255, 255, 255, 0.38);
+  --glass-shadow: 0 16px 40px -10px rgba(0, 8, 35, 0.55), 0 0 0 1px var(--glass-border);
+  --glass-shadow-lg: 0 24px 60px -12px rgba(0, 8, 35, 0.7), 0 0 0 1px var(--glass-border-bright);
+  --glass-blur: blur(20px);
+  --glass-blur-sm: blur(12px);
+
+  /* Segmented Bar System (From Reference UI) */
+  --bar-height: 28px;
+  --bar-border-color: rgba(255, 255, 255, 0.32);
+  --bar-filled-bg: rgba(255, 255, 255, 0.88);
+  --bar-striped-bg: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.35),
+    rgba(255, 255, 255, 0.35) 4px,
+    rgba(255, 255, 255, 0.12) 4px,
+    rgba(255, 255, 255, 0.12) 8px
+  );
+  --bar-empty-bg: rgba(255, 255, 255, 0.05);
+
+  /* Spacing Scale */
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+
+  /* Corner Radius */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-3xl: 32px;
+  --radius-full: 9999px;
+
+  /* Container & Max Widths */
+  --container-max: 1200px;
+  --hero-card-max: 680px;
+
+  /* Motion & Transitions */
+  --ease-decelerate: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 200ms;
+  --duration-normal: 350ms;
+  --duration-slow: 600ms;
+
+  /* Z-Index Layers */
+  --z-bg: -10;
+  --z-bg-overlay: -5;
+  --z-base: 1;
+  --z-card: 10;
+  --z-nav: 100;
+  --z-modal: 1000;
+}
